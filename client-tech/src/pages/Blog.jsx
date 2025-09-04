@@ -7,98 +7,142 @@ const blogs = [
     id: 1,
     title: "The Future of AI in Everyday Life",
     excerpt:
-      "AI is transforming the way we live, work, and connect. Smart assistants, automation, and AI-driven apps are everywhere.",
+      "AI is no longer science fiction. From healthcare to smart assistants, explore how AI is shaping tomorrow’s world today.",
     date: "August 28, 2025",
+    category: "Artificial Intelligence",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxqDtirq3lDSbt6wsrelu4vRjZBEHgICDf2A&s",
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&auto=format&fit=crop&q=80",
   },
   {
     id: 2,
     title: "Top Web Development Trends in 2025",
     excerpt:
-      "From Web3 to AI-driven design, explore key technologies shaping modern web development.",
+      "Discover the latest frameworks, design principles, and technologies driving modern web experiences.",
     date: "August 18, 2025",
+    category: "Web Development",
     image:
-      "https://images.unsplash.com/photo-1505685296765-3a2736de412f?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1505685296765-3a2736de412f?w=1200&auto=format&fit=crop&q=80",
   },
   {
     id: 3,
     title: "Cloud Computing for Startups",
     excerpt:
-      "Why cloud solutions are essential for startups: scalability, cost efficiency, and flexibility explained.",
+      "Startups thrive on scalability and flexibility. Learn why the cloud is the backbone of lean innovation.",
     date: "August 10, 2025",
+    category: "Cloud Computing",
     image:
-      "https://images.unsplash.com/photo-1504610926078-a1611febcad3?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1504610926078-a1611febcad3?w=1200&auto=format&fit=crop&q=80",
   },
   {
     id: 4,
     title: "Cybersecurity Essentials for 2025",
     excerpt:
-      "Protect your digital assets and personal information in an increasingly connected world.",
+      "Stay ahead of evolving threats. Practical tips to protect your digital presence and business assets.",
     date: "August 5, 2025",
+    category: "Cybersecurity",
     image:
-      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80",
+      "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1200&auto=format&fit=crop&q=80",
   },
 ];
 
-export default function AdvancedBlogCarousel() {
+export default function BlogPage() {
   const scrollRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
 
-  // Auto-scroll with infinite loop
+  // Auto-scroll effect
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     let frame;
-
     const scrollStep = () => {
       if (!isHovered && scrollContainer) {
-        scrollContainer.scrollLeft += 1; // speed
+        scrollContainer.scrollLeft += 1;
         if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
-          scrollContainer.scrollLeft = 0; // seamless loop
+          scrollContainer.scrollLeft = 0;
         }
       }
       frame = requestAnimationFrame(scrollStep);
     };
-
     frame = requestAnimationFrame(scrollStep);
     return () => cancelAnimationFrame(frame);
   }, [isHovered]);
 
-  const scroll = (direction) => {
-    const amount = 300;
-    if (direction === "left") {
-      scrollRef.current.scrollBy({ left: -amount, behavior: "smooth" });
-    } else {
-      scrollRef.current.scrollBy({ left: amount, behavior: "smooth" });
-    }
+  const scroll = (dir) => {
+    const amt = 420;
+    scrollRef.current.scrollBy({
+      left: dir === "left" ? -amt : amt,
+      behavior: "smooth",
+    });
   };
 
-  // Duplicate blogs for seamless loop
   const duplicatedBlogs = [...blogs, ...blogs];
 
   return (
-    <div className="min-h-screen pt-24 pb-16 px-6 bg-gradient-to-b from-sky-200 via-sky-300 to-blue-900">
-      {/* Hero */}
+    <div className="min-h-screen pt-20 pb-20 bg-gradient-to-b from-slate-50 via-white to-slate-100">
+      {/* Hero Section */}
       <motion.div
-        initial={{ opacity: 0, y: -40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7 }}
-        className="text-center mb-12"
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="text-center mb-16 max-w-4xl mx-auto px-6"
       >
-        <h1 className="text-5xl font-extrabold text-blue-900 drop-shadow-lg">
-          Our Blog
+        <span className="text-sky-600 font-semibold uppercase tracking-wide">
+          Tech2Gether Blog
+        </span>
+        <h1 className="text-5xl font-extrabold text-slate-900 tracking-tight mt-3">
+          Ideas, Insights & Innovation
         </h1>
-        <p className="mt-4 text-lg text-blue-100">
-          Insights, updates, and latest trends in technology.
+        <p className="mt-5 text-lg text-slate-600 leading-relaxed">
+          Stay ahead of technology trends with expert perspectives on AI, Cloud,
+          Web Development, and Cybersecurity.
         </p>
       </motion.div>
 
-      {/* Carousel */}
-      <div className="relative max-w-[85%] mx-auto">
+      {/* Featured Blog */}
+      <div className="relative max-w-6xl mx-auto mb-24 px-6">
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="relative rounded-3xl overflow-hidden shadow-xl bg-slate-200"
+        >
+          <img
+            src={blogs[0].image}
+            alt={blogs[0].title}
+            className="w-full h-[500px] object-cover object-center"
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="absolute bottom-10 left-10 max-w-2xl text-white"
+          >
+            <span className="px-3 py-1 bg-sky-600 rounded-full text-xs font-medium uppercase tracking-wide">
+              {blogs[0].category}
+            </span>
+            <h2 className="text-4xl font-bold mt-4">{blogs[0].title}</h2>
+            <p className="mt-3 text-lg text-slate-200">{blogs[0].excerpt}</p>
+            <button className="mt-6 px-6 py-3 bg-white/90 hover:bg-white text-slate-900 rounded-lg font-medium shadow transition">
+              Read Full Article
+            </button>
+          </motion.div>
+        </motion.div>
+      </div>
+
+      {/* Blog Carousel */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="relative max-w-[92%] mx-auto"
+      >
         {/* Left Arrow */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white text-blue-900 p-3 rounded-full shadow hover:scale-110 transition"
+          className="absolute -left-6 top-1/2 -translate-y-1/2 z-20 bg-white/90 shadow-md hover:bg-slate-100 text-slate-800 p-3 rounded-full transition"
         >
           <FaChevronLeft />
         </button>
@@ -113,23 +157,34 @@ export default function AdvancedBlogCarousel() {
           {duplicatedBlogs.map((blog, idx) => (
             <motion.div
               key={idx}
-              whileHover={{ scale: 1.08, zIndex: 10 }}
-              transition={{ type: "spring", stiffness: 200 }}
-              className="relative inline-block min-w-[300px] md:min-w-[350px] bg-white shadow-2xl rounded-3xl overflow-hidden cursor-pointer"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: idx * 0.05 }}
+              whileHover={{ y: -8, scale: 1.03 }}
+              className="inline-block min-w-[340px] md:min-w-[380px] bg-white/90 backdrop-blur-md rounded-2xl shadow-lg hover:shadow-2xl transition overflow-hidden cursor-pointer"
             >
-              <motion.img
+              <img
                 src={blog.image}
                 alt={blog.title}
-                className="w-full h-56 object-cover"
-                whileHover={{ scale: 1.05 }}
+                className="w-full h-52 object-cover object-center"
               />
               <div className="p-5">
-                <p className="text-sm text-blue-600 font-semibold">{blog.date}</p>
-                <h2 className="text-xl font-bold mt-2 text-blue-900">{blog.title}</h2>
-                <p className="text-gray-600 mt-2">{blog.excerpt}</p>
-                <button className="mt-4 px-4 py-2 bg-gradient-to-r from-sky-400 to-blue-600 text-white font-semibold rounded-xl shadow hover:scale-105 transition">
-                  Read More
-                </button>
+                <div className="flex items-center gap-2 text-xs font-medium text-sky-600 uppercase tracking-wide">
+                  <span className="px-2 py-1 bg-sky-100 rounded-full text-sky-700">
+                    {blog.category}
+                  </span>
+                  <span>{blog.date}</span>
+                </div>
+                <h3 className="text-lg font-bold mt-3 text-slate-900 line-clamp-2">
+                  {blog.title}
+                </h3>
+                <p className="text-slate-600 mt-2 line-clamp-3">
+                  {blog.excerpt}
+                </p>
+                <span className="mt-4 inline-block text-sky-600 font-medium hover:underline">
+                  Read More →
+                </span>
               </div>
             </motion.div>
           ))}
@@ -138,11 +193,11 @@ export default function AdvancedBlogCarousel() {
         {/* Right Arrow */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 z-20 bg-white/70 hover:bg-white text-blue-900 p-3 rounded-full shadow hover:scale-110 transition"
+          className="absolute -right-6 top-1/2 -translate-y-1/2 z-20 bg-white/90 shadow-md hover:bg-slate-100 text-slate-800 p-3 rounded-full transition"
         >
           <FaChevronRight />
         </button>
-      </div>
+      </motion.div>
     </div>
   );
 }

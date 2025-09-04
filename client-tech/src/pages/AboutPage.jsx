@@ -5,25 +5,34 @@ import { Users, Lightbulb, Target, Rocket } from "lucide-react";
 export default function AboutPage() {
   return (
     <div className="min-h-screen font-sans text-gray-100 bg-gradient-to-b from-sky-500 via-blue-700 to-blue-950 relative overflow-hidden">
-
       {/* Hero Section */}
-      <section className="h-[70vh] flex flex-col justify-center items-center text-center px-6 relative">
+      <section
+        className="h-[70vh] flex flex-col justify-center items-center text-center px-6 relative bg-cover bg-center"
+        style={{
+          backgroundImage: `url('https://images.unsplash.com/photo-1553877522-43269d4ea984?q=80&w=2070&auto=format&fit=crop')`,
+        }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/60"></div>
+
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-white via-blue-200 to-sky-400 bg-clip-text text-transparent drop-shadow-2xl"
+          viewport={{ once: true, amount: 0.3 }}
+          className="relative z-10 text-5xl md:text-7xl font-extrabold bg-gradient-to-r from-white via-blue-200 to-sky-400 bg-clip-text text-transparent drop-shadow-2xl"
         >
           About Tech2Gether
         </motion.h1>
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 1 }}
-          className="mt-6 text-lg md:text-xl max-w-2xl text-blue-100"
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 1 }}
+          viewport={{ once: true, amount: 0.3 }}
+          className="relative z-10 mt-6 text-lg md:text-xl max-w-2xl text-blue-100"
         >
-          We are a passionate team dedicated to building modern digital
-          solutions that connect technology with people.
+          Connecting technology with people through modern digital solutions.
         </motion.p>
       </section>
 
@@ -31,19 +40,21 @@ export default function AboutPage() {
       <section className="py-20 px-6 bg-gradient-to-b from-blue-900 to-blue-950">
         <div className="max-w-5xl mx-auto text-center">
           <motion.h2
-            whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            viewport={{ once: true, amount: 0.2 }}
             className="text-3xl md:text-5xl font-bold mb-6 text-white"
           >
             Who We Are
           </motion.h2>
+          <div className="w-24 h-1 bg-sky-400 mx-auto mb-8 rounded-full"></div>
           <p className="text-blue-200 max-w-3xl mx-auto text-lg leading-relaxed">
             At <span className="font-semibold text-sky-300">Tech2Gether</span>,
-            we believe in combining innovation, creativity, and technology
-            to design experiences that inspire. Our mission is to empower
-            businesses and individuals with cutting-edge web solutions,
-            impactful designs, and seamless user experiences.
+            we combine innovation, creativity, and technology to design
+            experiences that inspire. Our mission is to empower businesses and
+            individuals with cutting-edge web solutions, impactful designs, and
+            seamless user experiences.
           </p>
         </div>
       </section>
@@ -52,9 +63,10 @@ export default function AboutPage() {
       <section className="py-24 px-6 bg-gradient-to-b from-blue-950 to-black">
         <div className="max-w-6xl mx-auto text-center">
           <motion.h2
-            whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            viewport={{ once: true, amount: 0.2 }}
             className="text-3xl md:text-5xl font-bold mb-16 text-white"
           >
             Our Core Values
@@ -85,10 +97,11 @@ export default function AboutPage() {
             ].map((value, i) => (
               <motion.div
                 key={i}
-                whileHover={{ scale: 1.05 }}
-                whileInView={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.05, rotate: 1 }}
                 transition={{ duration: 0.8, delay: i * 0.2 }}
+                viewport={{ once: true, amount: 0.2 }}
                 className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-lg hover:shadow-2xl"
               >
                 <div className="mb-4 flex justify-center">{value.icon}</div>
@@ -106,9 +119,10 @@ export default function AboutPage() {
       <section className="py-24 px-6 bg-gradient-to-b from-black via-blue-950 to-blue-900 relative">
         <div className="max-w-3xl mx-auto text-center relative">
           <motion.h2
-            whileInView={{ opacity: 1, y: 0 }}
             initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            viewport={{ once: true, amount: 0.2 }}
             className="text-3xl md:text-5xl font-bold mb-6 text-white"
           >
             Join Us on Our Journey
@@ -119,7 +133,7 @@ export default function AboutPage() {
           </p>
           <a
             href="#contact"
-            className="inline-block bg-gradient-to-r from-sky-400 via-blue-500 to-blue-700 text-white font-semibold px-10 py-4 rounded-full shadow-lg hover:scale-110 transition"
+            className="inline-block bg-gradient-to-r from-sky-400 via-blue-500 to-blue-700 text-white font-semibold px-10 py-4 rounded-full shadow-lg hover:scale-110 hover:shadow-sky-500/50 transition"
           >
             Work With Us
           </a>
