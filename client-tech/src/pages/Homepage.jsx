@@ -52,13 +52,13 @@ export default function HomePage() {
           className="relative mt-10 flex space-x-5"
         >
           <a
-            href="/services"
+            href="#services"
             className="bg-gradient-to-r from-white to-blue-100 text-blue-700 font-semibold px-6 py-3 rounded-xl shadow-xl hover:scale-110 transition flex items-center gap-2"
           >
             Explore Services <ArrowRight className="w-5 h-5" />
           </a>
           <a
-            href="/contact"
+            href="#contact"
             className="bg-gradient-to-r from-blue-600 to-sky-500 text-white font-semibold px-6 py-3 rounded-xl shadow-xl hover:scale-110 transition"
           >
             Get in Touch
@@ -206,7 +206,7 @@ export default function HomePage() {
             create something extraordinary.
           </p>
           <a
-            href="/contact"
+            href="#"
             className="inline-block bg-gradient-to-r from-sky-400 via-blue-500 to-blue-700 text-white font-semibold px-12 py-4 rounded-full shadow-lg hover:scale-110 transition text-lg"
           >
             Contact Us

@@ -123,7 +123,7 @@ export default function ServicesPage() {
           ideas to life with innovation and expertise.
         </p>
         <a
-          href="/contact"
+          href="#contact"
           className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold px-10 py-4 rounded-2xl shadow-lg hover:from-cyan-500 hover:to-blue-600 transition"
         >
           Contact Us

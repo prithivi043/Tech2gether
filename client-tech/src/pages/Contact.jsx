@@ -3,18 +3,14 @@ import React, { useState, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { sendContactForm } from "../api/contactApi";
 
-// ✅ Lazy load lucide-react icons
+// Lazy load lucide-react icons
 const Mail = lazy(() => import("lucide-react").then(m => ({ default: m.Mail })));
 const Phone = lazy(() => import("lucide-react").then(m => ({ default: m.Phone })));
 const MapPin = lazy(() => import("lucide-react").then(m => ({ default: m.MapPin })));
 const Linkedin = lazy(() => import("lucide-react").then(m => ({ default: m.Linkedin })));
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState("");
 
   const handleChange = (e) =>
@@ -26,13 +22,16 @@ export default function Contact() {
 
     try {
       const data = await sendContactForm(formData);
-      if (data.success) {
+
+      // Check backend response status
+      if (data.status === "success") {
         setStatus("✅ Message saved to Database!");
         setFormData({ name: "", email: "", message: "" });
       } else {
-        setStatus("❌ Error: " + data.message);
+        setStatus("✅ " + (data.message || "Unknown error"));
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStatus("❌ Server Error. Try again later.");
     }
   };
@@ -64,13 +63,10 @@ export default function Contact() {
           </p>
 
           <address className="not-italic space-y-4">
-            <Suspense fallback={<span className="text-blue-300">...</span>}>
+            <Suspense fallback={<span className="text-blue-300">Loading...</span>}>
               <p className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-blue-400" aria-hidden="true" />
-                <a
-                  href="mailto:tech2gether2025@gmail.com"
-                  className="hover:underline"
-                >
+                <a href="mailto:tech2gether2025@gmail.com" className="hover:underline">
                   tech2gether2025@gmail.com
                 </a>
               </p>
@@ -107,9 +103,6 @@ export default function Contact() {
           className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-xl space-y-6"
           aria-label="Contact Form"
         >
-          <label className="sr-only" htmlFor="name">
-            Your Name
-          </label>
           <input
             type="text"
             id="name"
@@ -121,9 +114,6 @@ export default function Contact() {
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
-          <label className="sr-only" htmlFor="email">
-            Your Email
-          </label>
           <input
             type="email"
             id="email"
@@ -135,9 +125,6 @@ export default function Contact() {
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
-          <label className="sr-only" htmlFor="message">
-            Your Message
-          </label>
           <textarea
             rows="4"
             id="message"
