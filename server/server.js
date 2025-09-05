@@ -8,7 +8,16 @@ import contactRoutes from "./routes/contactRoutes.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// Enable CORS for all origins and all methods
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL, // can be replaced with "*" for all
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true, // optional, if you use cookies/auth
+  })
+);
+
 app.use(express.json());
 app.use(express.static("build", {
   maxAge: "1y",
