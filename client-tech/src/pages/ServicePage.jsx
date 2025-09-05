@@ -1,6 +1,11 @@
 // src/pages/ServicesPage.jsx
+import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
-import { Globe, Palette, Layout } from "lucide-react"; // icons
+
+// ✅ Lazy load lucide-react icons
+const Globe = lazy(() => import("lucide-react").then(m => ({ default: m.Globe })));
+const Palette = lazy(() => import("lucide-react").then(m => ({ default: m.Palette })));
+const Layout = lazy(() => import("lucide-react").then(m => ({ default: m.Layout })));
 
 export default function ServicesPage() {
   const services = [
@@ -63,7 +68,7 @@ export default function ServicesPage() {
           transition={{ delay: 0.3, duration: 0.8 }}
           className="text-blue-200 text-lg leading-relaxed"
         >
-          Tech-Together delivers digital solutions that help your brand grow.
+          Tech2gether delivers digital solutions that help your brand grow.
           From modern websites to engaging visuals and intuitive designs—we
           create results that make an impact.
         </motion.p>
@@ -71,33 +76,35 @@ export default function ServicesPage() {
 
       {/* Services List */}
       <section className="pb-24 px-6 max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
-        {services.map((service, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:scale-[1.03] transition transform group"
-          >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 rounded-full bg-white/10">{service.icon}</div>
-              <h3 className="text-2xl font-semibold">{service.title}</h3>
-            </div>
-            <p className="text-blue-100 mb-6 text-base">{service.description}</p>
-            <ul className="list-disc list-inside text-blue-200 space-y-2 mb-6">
-              {service.points.map((point, i) => (
-                <li key={i}>{point}</li>
-              ))}
-            </ul>
-            <a
-              href="#"
-              className="inline-block bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:from-cyan-500 hover:to-blue-600 transition"
+        <Suspense fallback={<div className="text-blue-200">Loading services...</div>}>
+          {services.map((service, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:scale-[1.03] transition transform group"
             >
-              {service.cta}
-            </a>
-          </motion.div>
-        ))}
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 rounded-full bg-white/10">{service.icon}</div>
+                <h3 className="text-2xl font-semibold">{service.title}</h3>
+              </div>
+              <p className="text-blue-100 mb-6 text-base">{service.description}</p>
+              <ul className="list-disc list-inside text-blue-200 space-y-2 mb-6">
+                {service.points.map((point, i) => (
+                  <li key={i}>{point}</li>
+                ))}
+              </ul>
+              <a
+                href="#"
+                className="inline-block bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:from-cyan-500 hover:to-blue-600 transition"
+              >
+                {service.cta}
+              </a>
+            </motion.div>
+          ))}
+        </Suspense>
       </section>
 
       {/* CTA Section */}

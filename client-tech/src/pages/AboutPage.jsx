@@ -1,6 +1,12 @@
 // src/pages/AboutPage.jsx
+import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
-import { Users, Lightbulb, Target, Rocket } from "lucide-react";
+
+// ✅ Lazy load icons
+const Users = lazy(() => import("lucide-react").then(m => ({ default: m.Users })));
+const Lightbulb = lazy(() => import("lucide-react").then(m => ({ default: m.Lightbulb })));
+const Target = lazy(() => import("lucide-react").then(m => ({ default: m.Target })));
+const Rocket = lazy(() => import("lucide-react").then(m => ({ default: m.Rocket })));
 
 export default function AboutPage() {
   return (
@@ -73,44 +79,46 @@ export default function AboutPage() {
           </motion.h2>
 
           <div className="grid md:grid-cols-4 gap-10">
-            {[
-              {
-                icon: <Users className="w-12 h-12 text-sky-300" />,
-                title: "Collaboration",
-                desc: "We grow by working together and valuing diverse ideas.",
-              },
-              {
-                icon: <Lightbulb className="w-12 h-12 text-yellow-300" />,
-                title: "Innovation",
-                desc: "We embrace creativity and bring fresh ideas to life.",
-              },
-              {
-                icon: <Target className="w-12 h-12 text-red-400" />,
-                title: "Excellence",
-                desc: "We strive for quality and precision in everything we do.",
-              },
-              {
-                icon: <Rocket className="w-12 h-12 text-green-300" />,
-                title: "Growth",
-                desc: "We aim to make an impact that scales with the future.",
-              },
-            ].map((value, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.05, rotate: 1 }}
-                transition={{ duration: 0.8, delay: i * 0.2 }}
-                viewport={{ once: true, amount: 0.2 }}
-                className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-lg hover:shadow-2xl"
-              >
-                <div className="mb-4 flex justify-center">{value.icon}</div>
-                <h3 className="text-xl font-semibold text-white mb-2">
-                  {value.title}
-                </h3>
-                <p className="text-blue-200 text-sm">{value.desc}</p>
-              </motion.div>
-            ))}
+            <Suspense fallback={<div className="text-blue-200">Loading...</div>}>
+              {[
+                {
+                  icon: <Users className="w-12 h-12 text-sky-300" />,
+                  title: "Collaboration",
+                  desc: "We grow by working together and valuing diverse ideas.",
+                },
+                {
+                  icon: <Lightbulb className="w-12 h-12 text-yellow-300" />,
+                  title: "Innovation",
+                  desc: "We embrace creativity and bring fresh ideas to life.",
+                },
+                {
+                  icon: <Target className="w-12 h-12 text-red-400" />,
+                  title: "Excellence",
+                  desc: "We strive for quality and precision in everything we do.",
+                },
+                {
+                  icon: <Rocket className="w-12 h-12 text-green-300" />,
+                  title: "Growth",
+                  desc: "We aim to make an impact that scales with the future.",
+                },
+              ].map((value, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={{ scale: 1.05, rotate: 1 }}
+                  transition={{ duration: 0.8, delay: i * 0.2 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-lg hover:shadow-2xl"
+                >
+                  <div className="mb-4 flex justify-center">{value.icon}</div>
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    {value.title}
+                  </h3>
+                  <p className="text-blue-200 text-sm">{value.desc}</p>
+                </motion.div>
+              ))}
+            </Suspense>
           </div>
         </div>
       </section>
@@ -132,7 +140,7 @@ export default function AboutPage() {
             collaborators, and visionaries who want to build the future with us.
           </p>
           <a
-            href="#contact"
+            href="/contact"
             className="inline-block bg-gradient-to-r from-sky-400 via-blue-500 to-blue-700 text-white font-semibold px-10 py-4 rounded-full shadow-lg hover:scale-110 hover:shadow-sky-500/50 transition"
           >
             Work With Us

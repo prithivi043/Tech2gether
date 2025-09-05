@@ -21,13 +21,14 @@ export const Header = () => {
 
         {/* Logo */}
         <motion.h1
-          className="text-2xl font-extrabold tracking-wide text-white"
+          className="text-3xl font-bold italic tracking-tight text-white font-sans"
           whileHover={{ scale: 1.1 }}
         >
           <Link to="/" className="hover:cursor-pointer">
-            Tech<span className="text-blue-400">Together</span>
+            Tech<span className="text-blue-400">2gether</span>
           </Link>
         </motion.h1>
+
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex space-x-6 text-lg font-medium text-gray-200">

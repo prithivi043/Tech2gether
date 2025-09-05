@@ -1,6 +1,14 @@
-import React, { useRef, useEffect, useState } from "react";
+// src/pages/BlogPage.jsx
+import React, { useRef, useEffect, useState, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+// ✅ Lazy load react-icons
+const FaChevronLeft = lazy(() =>
+  import("react-icons/fa").then((m) => ({ default: m.FaChevronLeft }))
+);
+const FaChevronRight = lazy(() =>
+  import("react-icons/fa").then((m) => ({ default: m.FaChevronRight }))
+);
 
 const blogs = [
   {
@@ -110,6 +118,7 @@ export default function BlogPage() {
           <img
             src={blogs[0].image}
             alt={blogs[0].title}
+            loading="lazy"
             className="w-full h-[500px] object-cover object-center"
           />
           <motion.div
@@ -140,12 +149,14 @@ export default function BlogPage() {
         className="relative max-w-[92%] mx-auto"
       >
         {/* Left Arrow */}
-        <button
-          onClick={() => scroll("left")}
-          className="absolute -left-6 top-1/2 -translate-y-1/2 z-20 bg-white/90 shadow-md hover:bg-slate-100 text-slate-800 p-3 rounded-full transition"
-        >
-          <FaChevronLeft />
-        </button>
+        <Suspense fallback={<div />}>
+          <button
+            onClick={() => scroll("left")}
+            className="absolute -left-6 top-1/2 -translate-y-1/2 z-20 bg-white/90 shadow-md hover:bg-slate-100 text-slate-800 p-3 rounded-full transition"
+          >
+            <FaChevronLeft />
+          </button>
+        </Suspense>
 
         {/* Scrollable Container */}
         <div
@@ -167,6 +178,7 @@ export default function BlogPage() {
               <img
                 src={blog.image}
                 alt={blog.title}
+                loading="lazy"
                 className="w-full h-52 object-cover object-center"
               />
               <div className="p-5">
@@ -191,12 +203,14 @@ export default function BlogPage() {
         </div>
 
         {/* Right Arrow */}
-        <button
-          onClick={() => scroll("right")}
-          className="absolute -right-6 top-1/2 -translate-y-1/2 z-20 bg-white/90 shadow-md hover:bg-slate-100 text-slate-800 p-3 rounded-full transition"
-        >
-          <FaChevronRight />
-        </button>
+        <Suspense fallback={<div />}>
+          <button
+            onClick={() => scroll("right")}
+            className="absolute -right-6 top-1/2 -translate-y-1/2 z-20 bg-white/90 shadow-md hover:bg-slate-100 text-slate-800 p-3 rounded-full transition"
+          >
+            <FaChevronRight />
+          </button>
+        </Suspense>
       </motion.div>
     </div>
   );

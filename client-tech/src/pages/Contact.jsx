@@ -1,7 +1,13 @@
-import React, { useState } from "react";
+// src/pages/Contact.jsx
+import React, { useState, Suspense, lazy } from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Linkedin } from "lucide-react";
 import { sendContactForm } from "../api/contactApi";
+
+// ✅ Lazy load lucide-react icons
+const Mail = lazy(() => import("lucide-react").then(m => ({ default: m.Mail })));
+const Phone = lazy(() => import("lucide-react").then(m => ({ default: m.Phone })));
+const MapPin = lazy(() => import("lucide-react").then(m => ({ default: m.MapPin })));
+const Linkedin = lazy(() => import("lucide-react").then(m => ({ default: m.Linkedin })));
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -58,31 +64,36 @@ export default function Contact() {
           </p>
 
           <address className="not-italic space-y-4">
-            <p className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-blue-400" aria-hidden="true" />
-              <a href="mailto:tech2gether2025@gmail.com" className="hover:underline">
-                tech2gether2025@gmail.com
+            <Suspense fallback={<span className="text-blue-300">...</span>}>
+              <p className="flex items-center gap-3">
+                <Mail className="w-5 h-5 text-blue-400" aria-hidden="true" />
+                <a
+                  href="mailto:tech2gether2025@gmail.com"
+                  className="hover:underline"
+                >
+                  tech2gether2025@gmail.com
+                </a>
+              </p>
+              <p className="flex items-center gap-3">
+                <Phone className="w-5 h-5 text-blue-400" aria-hidden="true" />
+                <a href="tel:+919087206990" className="hover:underline">
+                  +91 90872 06990
+                </a>
+              </p>
+              <p className="flex items-center gap-3">
+                <MapPin className="w-5 h-5 text-blue-400" aria-hidden="true" />
+                <span>Mayiladuthurai, India</span>
+              </p>
+              <a
+                href="https://www.linkedin.com/in/tech-together-758a74381/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-blue-300 hover:text-blue-500 transition"
+              >
+                <Linkedin className="w-5 h-5" aria-hidden="true" />
+                <span>LinkedIn Profile</span>
               </a>
-            </p>
-            <p className="flex items-center gap-3">
-              <Phone className="w-5 h-5 text-blue-400" aria-hidden="true" />
-              <a href="tel:+919087206990" className="hover:underline">
-                +91 90872 06990
-              </a>
-            </p>
-            <p className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-blue-400" aria-hidden="true" />
-              <span>Mayiladuthurai, India</span>
-            </p>
-            <a
-              href="https://www.linkedin.com/in/tech-together-758a74381/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-3 text-blue-300 hover:text-blue-500 transition"
-            >
-              <Linkedin className="w-5 h-5" aria-hidden="true" />
-              <span>LinkedIn Profile</span>
-            </a>
+            </Suspense>
           </address>
         </motion.div>
 
@@ -96,7 +107,9 @@ export default function Contact() {
           className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-xl space-y-6"
           aria-label="Contact Form"
         >
-          <label className="sr-only" htmlFor="name">Your Name</label>
+          <label className="sr-only" htmlFor="name">
+            Your Name
+          </label>
           <input
             type="text"
             id="name"
@@ -108,7 +121,9 @@ export default function Contact() {
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
-          <label className="sr-only" htmlFor="email">Your Email</label>
+          <label className="sr-only" htmlFor="email">
+            Your Email
+          </label>
           <input
             type="email"
             id="email"
@@ -120,7 +135,9 @@ export default function Contact() {
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
           />
 
-          <label className="sr-only" htmlFor="message">Your Message</label>
+          <label className="sr-only" htmlFor="message">
+            Your Message
+          </label>
           <textarea
             rows="4"
             id="message"
