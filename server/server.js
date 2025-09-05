@@ -9,7 +9,18 @@ import contactRoutes from "./routes/contactRoutes.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// Allowed origins for frontend
+const allowedOrigins = [
+  "http://localhost:5173",                 // local Vite dev
+  "https://tech2gether-lp88.vercel.app"   // production frontend
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST"],                // allow only GET and POST
+}));
+
 app.use(express.json());
 
 // Serve static files if needed (for frontend build)
