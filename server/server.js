@@ -8,16 +8,16 @@ import contactRoutes from "./routes/contactRoutes.js";
 dotenv.config();
 
 const app = express();
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://tech2gether.vercel.app"
+];
 
-// Enable CORS for all origins and all methods
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL, // can be replaced with "*" for all
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    credentials: true, // optional, if you use cookies/auth
-  })
-);
-
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.static("build", {
   maxAge: "1y",
