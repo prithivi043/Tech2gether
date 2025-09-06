@@ -4,11 +4,7 @@ import { Mail, Phone, MapPin, Linkedin } from "lucide-react";
 import { sendContactForm } from "../api/contactApi";
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState("");
 
   const handleChange = (e) =>
@@ -39,11 +35,10 @@ export default function Contact() {
         backgroundImage: `url('https://images.unsplash.com/photo-1551836022-4c4c79ecde51?q=80&w=1920&auto=format&fit=crop')`,
       }}
     >
-      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-blue-900/80 to-sky-900/70"></div>
 
       <div className="relative max-w-6xl w-full grid grid-cols-1 md:grid-cols-2 gap-12 text-white">
-        {/* Left Side - Contact Info */}
+        {/* Left - Contact Info */}
         <motion.div
           initial={{ x: -50, opacity: 0 }}
           whileInView={{ x: 0, opacity: 1 }}
@@ -59,19 +54,19 @@ export default function Contact() {
 
           <address className="not-italic space-y-4">
             <p className="flex items-center gap-3">
-              <Mail className="w-5 h-5 text-blue-400" aria-hidden="true" />
+              <Mail className="w-5 h-5 text-blue-400" />
               <a href="mailto:tech2gether2025@gmail.com" className="hover:underline">
                 tech2gether2025@gmail.com
               </a>
             </p>
             <p className="flex items-center gap-3">
-              <Phone className="w-5 h-5 text-blue-400" aria-hidden="true" />
+              <Phone className="w-5 h-5 text-blue-400" />
               <a href="tel:+919087206990" className="hover:underline">
                 +91 90872 06990
               </a>
             </p>
             <p className="flex items-center gap-3">
-              <MapPin className="w-5 h-5 text-blue-400" aria-hidden="true" />
+              <MapPin className="w-5 h-5 text-blue-400" />
               <span>Mayiladuthurai, India</span>
             </p>
             <a
@@ -80,13 +75,13 @@ export default function Contact() {
               rel="noopener noreferrer"
               className="flex items-center gap-3 text-blue-300 hover:text-blue-500 transition"
             >
-              <Linkedin className="w-5 h-5" aria-hidden="true" />
+              <Linkedin className="w-5 h-5" />
               <span>LinkedIn Profile</span>
             </a>
           </address>
         </motion.div>
 
-        {/* Right Side - Contact Form */}
+        {/* Right - Contact Form */}
         <motion.form
           onSubmit={handleSubmit}
           initial={{ x: 50, opacity: 0 }}
@@ -94,12 +89,9 @@ export default function Contact() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
           className="bg-white/10 backdrop-blur-lg p-8 rounded-2xl shadow-xl space-y-6"
-          aria-label="Contact Form"
         >
-          <label className="sr-only" htmlFor="name">Your Name</label>
           <input
             type="text"
-            id="name"
             name="name"
             placeholder="Your Name"
             value={formData.name}
@@ -107,11 +99,8 @@ export default function Contact() {
             required
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
           />
-
-          <label className="sr-only" htmlFor="email">Your Email</label>
           <input
             type="email"
-            id="email"
             name="email"
             placeholder="Your Email"
             value={formData.email}
@@ -119,11 +108,8 @@ export default function Contact() {
             required
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
           />
-
-          <label className="sr-only" htmlFor="message">Your Message</label>
           <textarea
             rows="4"
-            id="message"
             name="message"
             placeholder="Your Message"
             value={formData.message}
@@ -131,7 +117,6 @@ export default function Contact() {
             required
             className="w-full px-4 py-3 rounded-lg bg-white/20 border border-gray-400 focus:ring-2 focus:ring-blue-400 outline-none"
           />
-
           <motion.button
             type="submit"
             whileHover={{ scale: 1.05 }}
@@ -140,7 +125,6 @@ export default function Contact() {
           >
             Send Message
           </motion.button>
-
           {status && <p className="text-center mt-2">{status}</p>}
         </motion.form>
       </div>
