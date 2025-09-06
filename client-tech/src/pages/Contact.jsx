@@ -17,7 +17,7 @@ export default function Contact() {
     try {
       const data = await sendContactForm(formData);
       if (data.success) {
-        setStatus("✅ Message saved to Database!");
+        setStatus("✅ Greeting email sent successfully!");
         setFormData({ name: "", email: "", message: "" });
       } else {
         setStatus("❌ Error: " + data.message);
