@@ -1,6 +1,7 @@
 import express from "express";
 import { Resend } from "resend";
 import dotenv from "dotenv";
+import Contact from "../models/Contact.js";
 
 dotenv.config();
 
@@ -11,10 +12,14 @@ router.post("/", async (req, res) => {
   const { name, email, message } = req.body;
 
   try {
-    // 1️⃣ Email to YOU (admin)
+    // ✅ Save to MongoDB
+    const newContact = new Contact({ name, email, message });
+    await newContact.save();
+
+    // ✅ Email to YOU (admin)
     await resend.emails.send({
-      from: "Tech2gether <onboarding@resend.dev>", // Or your verified domain email
-      to: "your-email@example.com",  // <-- Replace with your email
+      from: "Tech2gether <onboarding@resend.dev>", // use verified sender
+      to: "your-email@example.com",  // <-- replace with your email
       subject: `📩 New Contact Form Submission from ${name}`,
       html: `
         <h2>New Contact Message</h2>
@@ -24,25 +29,25 @@ router.post("/", async (req, res) => {
       `,
     });
 
-    // 2️⃣ Auto-reply to Visitor
+    // ✅ Auto-reply to visitor (only send, don’t save)
     await resend.emails.send({
-      from: "Tech2gether <onboarding@resend.dev>", // Must be verified sender
-      to: email, // Send back to visitor
-      subject: "Thanks for contacting Tech2gether!",
+      from: "Tech2gether <onboarding@resend.dev>",
+      to: email,
+      subject: "✅ Thanks for contacting Tech2gether!",
       html: `
         <h2>Hello ${name},</h2>
-        <p>Thank you for visiting <strong>Tech2gether</strong> and reaching out to us.</p>
-        <p>We have received your message and will get back to you shortly.</p>
+        <p>Thank you for reaching out to <strong>Tech2gether</strong>.</p>
+        <p>We’ve received your message and will get back to you shortly.</p>
         <br/>
         <p>Best regards,</p>
         <p><strong>Team Tech2gether</strong></p>
       `,
     });
 
-    res.status(200).json({ success: true, message: "Email sent successfully!" });
+    res.status(200).json({ success: true, message: "Message saved & emails sent!" });
   } catch (error) {
-    console.error("❌ Resend Error:", error);
-    res.status(500).json({ success: false, error: "Email failed to send." });
+    console.error("❌ Error in contact route:", error);
+    res.status(500).json({ success: false, error: "Something went wrong." });
   }
 });
 
