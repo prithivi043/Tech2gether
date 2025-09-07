@@ -17,6 +17,7 @@ export const Header = () => {
   ];
 
   const servicesList = [
+    { path: "/services", label: "Services" },
     { path: "/services/web-development", label: "Web Development" },
     { path: "/services/poster-design", label: "Poster Design" },
     { path: "/services/ui-ux-design", label: "UI/UX Design" },
