@@ -1,12 +1,15 @@
 import express from "express";
-import { Resend } from "resend";
 import dotenv from "dotenv";
 import Contact from "../models/Contact.js";
+import SibApiV3Sdk from "sib-api-v3-sdk";
 
 dotenv.config();
-
 const router = express.Router();
-const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Initialize Brevo client
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+defaultClient.authentications["api-key"].apiKey = process.env.BREVO_API_KEY;
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 router.post("/", async (req, res) => {
   const { name, email, message } = req.body;
@@ -17,39 +20,53 @@ router.post("/", async (req, res) => {
     await newContact.save();
 
     // ✅ Email to YOU (admin)
-    await resend.emails.send({
-      from: "Tech2gether <onboarding@resend.dev>", // use verified sender
-      to: "your-email@example.com",  // <-- replace with your email
-      subject: `📩 New Contact Form Submission from ${name}`,
-      html: `
-        <h2>New Contact Message</h2>
+    await apiInstance.sendTransacEmail({
+      sender: { email: "prithivigithub043@gmail.com", name: "Tech2gether" },
+      to: [{ email: "prithivigithub043@gmail.com" }], // Replace with your email
+      subject: `📩 New Contact Form Submission - ${name}`,
+      htmlContent: `
+        <h2>📬 New Contact Request</h2>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Message:</strong> ${message}</p>
-      `,
-    });
-
-    // ✅ Auto-reply to visitor (only send, don’t save)
-    await resend.emails.send({
-      from: "Tech2gether <onboarding@resend.dev>",
-      to: email,
-      subject: "✅ Thanks for contacting Tech2gether!",
-      html: `
-        <h2>Hello ${name},</h2>
-        <p>Thank you for reaching out to <strong>Tech2gether</strong>.</p>
-        <p>We’ve received your message and will get back to you shortly.</p>
+        <p><strong>Message:</strong></p>
+        <blockquote style="background:#f9f9f9;padding:10px;border-left:3px solid #007BFF;">
+          ${message}
+        </blockquote>
         <br/>
-        <p>Best regards,</p>
-        <p><strong>Team Tech2gether</strong></p>
+        <p>📅 Received on: ${new Date().toLocaleString()}</p>
       `,
     });
 
-    res.status(200).json({ success: true, message: "Message saved & emails sent!" });
+    // ✅ Professional Auto-Reply to Visitor
+    await apiInstance.sendTransacEmail({
+      sender: { email: "prithivigithub043@gmail.com", name: "Tech2gether" },
+      to: [{ email }],
+      subject: "✅ Your message has been received – Tech2gether",
+      htmlContent: `
+        <div style="font-family:Arial,sans-serif;color:#333;line-height:1.6;">
+          <h2 style="color:#007BFF;">Hello ${name},</h2>
+          <p>Thank you for contacting <strong>Tech2gether</strong>.</p>
+          <p>We have successfully received your message and our team will review it shortly. 
+          You can expect a response within <strong>24–48 hours</strong>.</p>
+          <p>If your query is urgent, feel free to reach us directly at 
+          <a href="mailto:prithivigithub043@gmail.com">prithivigithub043@gmail.com</a>.</p>
+          <br/>
+          <p>We appreciate your interest and look forward to assisting you.</p>
+          <br/>
+          <p>Best regards,</p>
+          <p><strong>Team Tech2gether</strong><br/>
+          🌐 <a href="https://tech2gether.vercel.app" target="_blank">Visit our Website</a></p>
+        </div>
+      `,
+    });
+
+    res.json({ success: true, message: "Message saved & professional emails sent!" });
   } catch (error) {
     console.error("❌ Error in contact route:", error);
     res.status(500).json({ success: false, error: "Something went wrong." });
   }
 });
+
 
 // 📥 GET: Fetch all contacts
 router.get("/", async (req, res) => {
