@@ -140,7 +140,7 @@ export default function AboutPage() {
             collaborators, and visionaries who want to build the future with us.
           </p>
           <a
-            href="#contact"
+            href="/contact"
             className="inline-block bg-gradient-to-r from-sky-400 via-blue-500 to-blue-700 text-white font-semibold px-10 py-4 rounded-full shadow-lg hover:scale-110 hover:shadow-sky-500/50 transition"
           >
             Work With Us

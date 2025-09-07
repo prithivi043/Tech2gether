@@ -1,6 +1,7 @@
 // src/pages/ServicesPage.jsx
 import React, { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 // ✅ Lazy load lucide-react icons
 const Globe = lazy(() => import("lucide-react").then(m => ({ default: m.Globe })));
@@ -10,6 +11,7 @@ const Layout = lazy(() => import("lucide-react").then(m => ({ default: m.Layout 
 export default function ServicesPage() {
   const services = [
     {
+      id: "web-development",
       title: "Web Development",
       description:
         "We craft fast, scalable, and responsive web solutions. From personal portfolios to enterprise platforms, our websites are built with the latest technologies for speed, security, and SEO.",
@@ -23,6 +25,7 @@ export default function ServicesPage() {
       icon: <Globe size={40} className="text-blue-300" />,
     },
     {
+      id: "poster-design",
       title: "Poster Design",
       description:
         "Our creative team builds visually striking posters that amplify your message. Perfect for events, marketing campaigns, and branding promotions, blending clarity with impact.",
@@ -36,6 +39,7 @@ export default function ServicesPage() {
       icon: <Palette size={40} className="text-pink-300" />,
     },
     {
+      id: "ui-ux-design",
       title: "UI/UX Design",
       description:
         "We design user experiences that are both beautiful and functional. Our UI/UX solutions enhance usability, engagement, and customer satisfaction across devices.",
@@ -96,12 +100,12 @@ export default function ServicesPage() {
                   <li key={i}>{point}</li>
                 ))}
               </ul>
-              <a
-                href="#"
+              <Link
+                to={`/services/${service.id}`}
                 className="inline-block bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:from-cyan-500 hover:to-blue-600 transition"
               >
                 {service.cta}
-              </a>
+              </Link>
             </motion.div>
           ))}
         </Suspense>
