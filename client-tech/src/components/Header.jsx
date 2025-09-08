@@ -13,6 +13,7 @@ export const Header = () => {
     { path: "/about", label: "About" },
     { path: "/services", label: "Services" },
     { path: "/blog", label: "Blog" },
+    { path: "/cost-calculator", label: "Calculator" },
     { path: "/contact", label: "Contact" },
   ];
 
