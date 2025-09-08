@@ -1,69 +1,58 @@
+// src/pages/SmartEstimator.jsx
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
-import { CheckCircle, Copy, Stars } from "lucide-react";
+import { CheckCircle, Copy, Star } from "lucide-react";
 import { sendQuoteForm } from "../api/quoteApi";
+
+// Format INR → USD
+const formatPrice = (price) => (price / 88).toFixed(2);
 
 // Generate Unique Client ID
 const generateClientId = () =>
-  "CL-" + Date.now().toString(36) + "-" + Math.random().toString(36).substr(2, 5).toUpperCase();
+  "CL-" +
+  Date.now().toString(36) +
+  "-" +
+  Math.random().toString(36).substr(2, 5).toUpperCase();
 
-// Services Data
+// Service Data
 const servicesData = {
   "web-development": {
     title: "Web Development",
-    subtitle: "Fast, secure & SEO-friendly websites",
+    subtitle: "High-performance, SEO-ready websites",
     discount: "🔥 20% OFF this month!",
     pricing: [
       { plan: "Basic", price: 299, features: ["1 Page Website", "Basic SEO", "Hosting Setup"], timeline: "1-2 Weeks" },
-      { plan: "Standard", badge: "Popular", price: 699, features: ["Up to 5 Pages", "SEO Optimized", "Domain + Hosting"], timeline: "2-3 Weeks" },
+      { plan: "Standard", badge: "Most Popular", price: 699, features: ["Up to 5 Pages", "SEO Optimized", "Domain + Hosting"], timeline: "2-3 Weeks" },
       { plan: "Premium", price: 1299, features: ["Custom Website", "E-Commerce", "Ongoing Support"], timeline: "4-6 Weeks" },
     ],
-    roadmap: [
-      "Kickoff & Requirement Gathering",
-      "Wireframes & Visual Design",
-      "Development & Integrations",
-      "Testing, QA & Optimizations",
-      "Deployment & Handover",
-    ],
+    roadmap: ["Kickoff Meeting", "Wireframes & Design", "Development", "QA Testing", "Deployment"],
   },
   "ui-ux-design": {
     title: "UI/UX Design",
-    subtitle: "Human-centered product design",
+    subtitle: "Human-centered, research-driven designs",
     discount: "💡 Free Usability Audit with Pro Plan!",
     pricing: [
       { plan: "Starter", price: 199, features: ["Wireframes", "1 Platform", "Basic UI Kit"], timeline: "1 Week" },
-      { plan: "Pro", badge: "Best Value", price: 499, features: ["Interactive Prototypes", "Cross-Platform", "Design System"], timeline: "2-3 Weeks" },
+      { plan: "Pro", badge: "Best Value", price: 499, features: ["Prototypes", "Cross-Platform", "Design System"], timeline: "2-3 Weeks" },
       { plan: "Enterprise", price: 999, features: ["Research & Testing", "Design Ops", "Ongoing Support"], timeline: "4+ Weeks" },
     ],
-    roadmap: [
-      "User Research",
-      "Information Architecture",
-      "Wireframes & Prototypes",
-      "Design System",
-      "Usability Testing & Delivery",
-    ],
+    roadmap: ["Research", "IA & Wireframes", "Prototypes", "Design System", "User Testing"],
   },
   "poster-design": {
     title: "Poster Design",
-    subtitle: "Eye-catching, professional posters",
-    discount: "🎨 Free 1 Revision on Pro Plan!",
+    subtitle: "Creative posters that stand out",
+    discount: "🎨 Free extra revision with Pro Plan!",
     pricing: [
-      { plan: "Basic", price: 49, features: ["Single Poster", "Standard Template", "1 Revision"], timeline: "1-2 Days" },
-      { plan: "Pro", badge: "Popular", price: 99, features: ["Up to 3 Posters", "Custom Design", "2 Revisions"], timeline: "3-5 Days" },
-      { plan: "Premium", price: 199, features: ["Unlimited Posters", "Premium Custom Design", "Unlimited Revisions"], timeline: "5-7 Days" },
+      { plan: "Basic", price: 49, features: ["1 Poster", "Template Design", "1 Revision"], timeline: "1-2 Days" },
+      { plan: "Pro", badge: "Popular", price: 99, features: ["3 Posters", "Custom Design", "2 Revisions"], timeline: "3-5 Days" },
+      { plan: "Premium", price: 199, features: ["Unlimited Posters", "Premium Custom", "Unlimited Revisions"], timeline: "5-7 Days" },
     ],
-    roadmap: [
-      "Requirement Gathering",
-      "Concept & Sketch",
-      "Design & Draft",
-      "Client Review & Revisions",
-      "Final Delivery",
-    ],
+    roadmap: ["Briefing", "Concepts", "Design", "Feedback & Revisions", "Final Delivery"],
   },
 };
 
-// Add-ons List
+// Add-ons
 const addonsList = [
   { id: "extra-page", name: "Extra Page", price: 50 },
   { id: "seo-boost", name: "SEO Boost", price: 100 },
@@ -73,20 +62,24 @@ const addonsList = [
 ];
 
 export default function SmartEstimator() {
-  // States
   const [step, setStep] = useState(0);
   const [clientInfo, setClientInfo] = useState({ name: "", email: "", mobile: "" });
   const [selectedService, setSelectedService] = useState("");
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [addons, setAddons] = useState([]);
   const [clientId] = useState(generateClientId());
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(clientId);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500); // reset message after 1.5s
+  };
 
   const service = servicesData[selectedService];
   const totalEstimate = selectedPlan
-    ? selectedPlan.price + addons.reduce((acc, a) => acc + a.price, 0)
+    ? (selectedPlan.price + addons.reduce((acc, a) => acc + a.price, 0)) / 88
     : 0;
 
-  // Toggle Add-ons
   const handleAddonToggle = (addon) => {
     setAddons((prev) =>
       prev.some((a) => a.id === addon.id)
@@ -95,7 +88,6 @@ export default function SmartEstimator() {
     );
   };
 
-  // Reset Form
   const reset = () => {
     setStep(0);
     setClientInfo({ name: "", email: "", mobile: "" });
@@ -104,202 +96,520 @@ export default function SmartEstimator() {
     setAddons([]);
   };
 
-  // Download PDF
   const downloadPDF = () => {
     if (!service || !selectedPlan) return;
     const doc = new jsPDF();
     doc.setFontSize(18);
     doc.text("Project Quote", 14, 20);
-
     doc.setFontSize(12);
     doc.text(`Client ID: ${clientId}`, 14, 35);
     doc.text(`Name: ${clientInfo.name}`, 14, 45);
     doc.text(`Email: ${clientInfo.email}`, 14, 55);
-    doc.text(`Mobile: ${clientInfo.mobile}`, 14, 65);
-    doc.text(`Service: ${service.title}`, 14, 75);
-    doc.text(`Plan: ${selectedPlan.plan} - $${selectedPlan.price}`, 14, 85);
-
-    doc.text("Add-ons:", 14, 95);
-    if (addons.length) {
-      addons.forEach((a, i) => doc.text(`- ${a.name} ($${a.price})`, 20, 105 + i * 10));
-    } else {
-      doc.text("None", 20, 105);
-    }
-
-    doc.text(`Total Estimate: $${totalEstimate}`, 14, 130);
-
-    doc.text("Roadmap:", 14, 150);
-    service.roadmap.forEach((s, i) => {
-      doc.text(`${i + 1}. ${s}`, 20, 160 + i * 10);
-    });
-
+    doc.text(`Service: ${service.title}`, 14, 65);
+    doc.text(`Plan: ${selectedPlan.plan} - $${formatPrice(selectedPlan.price)}`, 14, 75);
+    doc.text("Add-ons:", 14, 85);
+    addons.length
+      ? addons.forEach((a, i) => doc.text(`- ${a.name} ($${formatPrice(a.price)})`, 20, 95 + i * 10))
+      : doc.text("None", 20, 95);
+    doc.text(`Total Estimate: $${totalEstimate.toFixed(2)}`, 14, 120);
+    doc.text("Roadmap:", 14, 140);
+    service.roadmap.forEach((s, i) => doc.text(`${i + 1}. ${s}`, 20, 150 + i * 10));
     doc.save(`${clientId}-${service.title}-${selectedPlan.plan}-quote.pdf`);
   };
 
-  // Request Quote
   const handleRequestQuote = async () => {
     if (!clientInfo.name || !clientInfo.email || !clientInfo.mobile || !service || !selectedPlan) {
       alert("Please complete all steps before requesting a quote.");
       return;
     }
-
-    const formData = {
-      clientId,
-      name: clientInfo.name,
-      email: clientInfo.email,
-      mobile: clientInfo.mobile,
-      service: service.title,
-      plan: selectedPlan.plan,
-      budget: totalEstimate,
-      message: `Selected Add-ons: ${addons.length ? addons.map((a) => a.name).join(", ") : "None"}`,
-    };
-
     try {
-      await sendQuoteForm(formData);
-      alert("✅ Quote request sent successfully!");
+      await sendQuoteForm({
+        clientId,
+        ...clientInfo,
+        service: service.title,
+        plan: selectedPlan.plan,
+        budget: totalEstimate.toFixed(2),
+        message: `Add-ons: ${addons.length ? addons.map((a) => a.name).join(", ") : "None"}`,
+      });
+      alert("✅ Quote request sent!");
       reset();
-    } catch (error) {
-      alert("❌ Failed to send quote. Try again.");
-      console.error(error);
+    } catch {
+      alert("❌ Failed to send quote.");
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-8 bg-white rounded-3xl shadow-2xl py-26">
+    <div className="max-w-7xl mx-auto p-10 bg-gradient-to-br from-indigo-50 via-white to-purple-50 rounded-3xl shadow-2xl py-26">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:justify-between mb-10 gap-4">
-        <div>
-          <h2 className="text-4xl font-extrabold text-gray-900">Smart Project Estimator</h2>
-          <p className="text-gray-500 mt-2">Transparent pricing, instant roadmap — get a quote in 3 easy steps.</p>
-          <p className="text-sm text-gray-400 mt-1">
-            Client ID: <span className="font-mono font-semibold text-indigo-600">{clientId}</span>
+      <header className="flex flex-col md:flex-row md:justify-between items-center mb-10 p-6 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-3xl shadow-xl border border-gray-100 gap-6">
+        {/* Left Section */}
+        <div className="flex flex-col gap-2 md:gap-3">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 to-purple-600 tracking-tight">
+            Smart Project Estimator
+          </h2>
+          <p className="text-gray-700 md:text-lg">
+            Instant pricing & roadmap. Get your tailored project quote in 3 steps.
           </p>
         </div>
-        <div className="flex gap-4 items-center">
-          <div className="bg-white border rounded-xl px-5 py-3 flex items-center gap-2 shadow-md">
-            <Stars className="w-6 h-6 text-yellow-400" />
-            <div className="text-sm">
-              <div className="font-semibold text-gray-800">Trusted by 120+ clients</div>
-              <div className="text-gray-400">Avg. delivery 10-20 days</div>
-            </div>
-          </div>
-          <button onClick={reset} className="hidden md:flex items-center gap-2 px-4 py-2 bg-white border rounded-lg text-sm shadow-md hover:bg-gray-50">
-            <Copy className="w-4 h-4" /> Reset
-          </button>
+
+        {/* Right Section */}
+        <div className="flex flex-col md:flex-row gap-4 items-center">
+          {/* Client ID Card */}
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            onClick={handleCopy}
+            className="flex items-center gap-2 px-4 py-3 bg-white rounded-2xl shadow-lg border border-indigo-200 cursor-pointer relative"
+          >
+            <span className="text-xs text-gray-500">Client ID:</span>
+            <span className="font-mono font-bold text-indigo-700">{clientId}</span>
+            <Copy className="w-4 h-4 text-indigo-600" />
+
+            {/* Copied Tooltip */}
+            {copied && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: -10 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="absolute -top-8 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs px-2 py-1 rounded-lg shadow-md"
+              >
+                <CheckCircle className="inline w-3 h-3 mr-1" /> Copied!
+              </motion.div>
+            )}
+          </motion.div>
+
+          {/* Reset Button */}
+          <motion.button
+            onClick={reset}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="hidden md:flex items-center gap-2 px-5 py-2 bg-white border border-indigo-300 rounded-xl text-sm font-medium shadow-md hover:bg-indigo-50 hover:shadow-lg transition"
+          >
+            <Copy className="w-4 h-4 text-indigo-600" />
+            Reset
+          </motion.button>
         </div>
       </header>
 
+
+
+
       {/* Stepper */}
-      <div className="flex items-center justify-between mb-10">
-        {["Client Info", "Service", "Plan", "Quote"].map((label, i) => (
-          <div key={i} className="flex-1 flex flex-col items-center relative">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-white ${step >= i ? "bg-indigo-600" : "bg-gray-300"}`}>
-              {i + 1}
+      {/* Professional Stepper */}
+      <div className="relative mb-10">
+        <div className="absolute top-6 left-6 right-6 h-1 bg-gray-300 rounded z-0">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${(step / 3) * 100}%` }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="h-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 rounded"
+          />
+        </div>
+
+        <div className="flex justify-between relative z-10">
+          {["Client Info", "Service", "Plan", "Quote"].map((label, i) => (
+            <div key={i} className="flex flex-col items-center relative">
+              <motion.div
+                whileHover={{ scale: 1.15 }}
+                className={`w-14 h-14 rounded-full flex items-center justify-center font-bold shadow-xl transition-all duration-300 ${step === i
+                  ? "bg-gradient-to-br from-indigo-600 to-purple-600 text-white ring-4 ring-indigo-300"
+                  : step > i
+                    ? "bg-gradient-to-br from-indigo-400 to-purple-400 text-white"
+                    : "bg-gray-200 text-gray-600"
+                  }`}
+              >
+                {i + 1}
+              </motion.div>
+              <div
+                className={`mt-2 text-sm font-semibold text-center transition-colors duration-300 ${step >= i ? "text-indigo-700" : "text-gray-500"
+                  }`}
+              >
+                {label}
+              </div>
             </div>
-            <div className="mt-2 text-sm text-gray-600">{label}</div>
-            {i < 3 && <div className="absolute top-6 right-[-50%] w-full h-1 bg-gray-200 z-0" />}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+
+
 
       {/* Steps */}
       <div className="grid md:grid-cols-3 gap-8">
+        {/* Main Content */}
         <div className="md:col-span-2">
           <AnimatePresence mode="wait">
-            {/* Step 0: Client Info */}
+            {/* Step 0 */}
             {step === 0 && (
-              <motion.div key="s0" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-white border rounded-3xl p-8 shadow-xl">
-                <h3 className="text-2xl font-semibold mb-6">1. Enter Your Information</h3>
+              <motion.div
+                key="s0"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                className="bg-white border rounded-3xl p-8 shadow-lg"
+              >
+                <h3 className="text-2xl font-semibold mb-6 text-indigo-700">1. Enter Your Information</h3>
+
                 <div className="flex flex-col gap-4">
-                  <input type="text" placeholder="Full Name" value={clientInfo.name} onChange={(e) => setClientInfo({ ...clientInfo, name: e.target.value })} className="border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-indigo-500" />
-                  <input type="email" placeholder="Email" value={clientInfo.email} onChange={(e) => setClientInfo({ ...clientInfo, email: e.target.value })} className="border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-indigo-500" />
-                  <input type="tel" placeholder="Mobile Number" value={clientInfo.mobile} onChange={(e) => setClientInfo({ ...clientInfo, mobile: e.target.value })} className="border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-indigo-500" />
-                  <button onClick={() => setStep(1)} className="mt-4 w-full bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700">Next</button>
+                  {/* Name Input */}
+                  <div className="flex flex-col">
+                    <input
+                      type="text"
+                      placeholder="John Doe"
+                      value={clientInfo.name}
+                      onChange={(e) =>
+                        setClientInfo({ ...clientInfo, name: e.target.value })
+                      }
+                      className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-indigo-500 transition ${clientInfo.name && clientInfo.name.length < 3 ? "border-red-400" : ""
+                        }`}
+                    />
+                    {clientInfo.name && clientInfo.name.length < 3 && (
+                      <span className="text-red-500 text-sm mt-1">
+                        Name must be at least 3 characters
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Email Input */}
+                  <div className="flex flex-col">
+                    <input
+                      type="email"
+                      placeholder="john@example.com"
+                      value={clientInfo.email}
+                      onChange={(e) =>
+                        setClientInfo({ ...clientInfo, email: e.target.value })
+                      }
+                      className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-indigo-500 transition ${clientInfo.email && !/^\S+@\S+\.\S+$/.test(clientInfo.email)
+                        ? "border-red-400"
+                        : ""
+                        }`}
+                    />
+                    {clientInfo.email && !/^\S+@\S+\.\S+$/.test(clientInfo.email) && (
+                      <span className="text-red-500 text-sm mt-1">
+                        Enter a valid email address
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Mobile Input */}
+                  <div className="flex flex-col">
+                    <input
+                      type="tel"
+                      placeholder="+91 98765 43210"
+                      value={clientInfo.mobile}
+                      onChange={(e) =>
+                        setClientInfo({ ...clientInfo, mobile: e.target.value })
+                      }
+                      className={`border rounded-lg px-4 py-3 w-full focus:ring-2 focus:ring-indigo-500 transition ${clientInfo.mobile && !/^\+?\d{10,15}$/.test(clientInfo.mobile)
+                        ? "border-red-400"
+                        : ""
+                        }`}
+                    />
+                    {clientInfo.mobile && !/^\+?\d{10,15}$/.test(clientInfo.mobile) && (
+                      <span className="text-red-500 text-sm mt-1">
+                        Enter a valid phone number
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Next Button */}
+                  <button
+                    onClick={() => setStep(1)}
+                    disabled={
+                      !clientInfo.name ||
+                      clientInfo.name.length < 3 ||
+                      !clientInfo.email ||
+                      !/^\S+@\S+\.\S+$/.test(clientInfo.email) ||
+                      !clientInfo.mobile ||
+                      !/^\+?\d{10,15}$/.test(clientInfo.mobile)
+                    }
+                    className={`mt-4 w-full px-6 py-3 rounded-lg font-semibold text-white transition ${!clientInfo.name ||
+                      clientInfo.name.length < 3 ||
+                      !clientInfo.email ||
+                      !/^\S+@\S+\.\S+$/.test(clientInfo.email) ||
+                      !clientInfo.mobile ||
+                      !/^\+?\d{10,15}$/.test(clientInfo.mobile)
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:opacity-90"
+                      }`}
+                  >
+                    Next
+                  </button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 1: Service */}
+
+            {/* Step 1 */}
             {step === 1 && (
-              <motion.div key="s1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-white border rounded-3xl p-8 shadow-xl">
-                <h3 className="text-2xl font-semibold mb-6">2. Select a Service</h3>
+              <motion.div
+                key="s1"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                className="bg-white border rounded-3xl p-8 shadow-lg"
+              >
+                <h3 className="text-2xl font-semibold mb-6 text-indigo-700">2. Select a Service</h3>
+
                 <div className="grid md:grid-cols-3 gap-6">
-                  {Object.keys(servicesData).map((key) => (
-                    <div key={key} onClick={() => setSelectedService(key)} className={`cursor-pointer border rounded-2xl p-6 hover:shadow-lg transition ${selectedService === key ? "border-indigo-600 shadow-lg" : "border-gray-200"}`}>
-                      <h4 className="text-lg font-bold">{servicesData[key].title}</h4>
-                      <p className="text-gray-500 mt-1">{servicesData[key].subtitle}</p>
-                      <span className="text-sm text-indigo-600 mt-2 block">{servicesData[key].discount}</span>
-                    </div>
-                  ))}
+                  {Object.keys(servicesData).map((key) => {
+                    const service = servicesData[key];
+                    return (
+                      <motion.div
+                        key={key}
+                        whileHover={{ scale: 1.04 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        onClick={() => setSelectedService(key)}
+                        className={`relative cursor-pointer border rounded-2xl p-6 transition
+              ${selectedService === key ? "border-indigo-600 shadow-2xl bg-indigo-50" : "border-gray-200 hover:shadow-md"}
+            `}
+                      >
+                        {/* Service Title */}
+                        <h4 className="text-lg font-bold text-gray-800">{service.title}</h4>
+
+                        {/* Subtitle */}
+                        <p className="text-gray-500 mt-1 text-sm">{service.subtitle}</p>
+
+                        {/* Discount */}
+                        {service.discount && (
+                          <span className="text-xs text-indigo-600 mt-3 block font-semibold">
+                            {service.discount}
+                          </span>
+                        )}
+
+                        {/* Highlight Selected Service */}
+                        {selectedService === key && (
+                          <motion.div
+                            layoutId="selected-service"
+                            className="absolute inset-0 border-2 border-indigo-600 rounded-2xl pointer-events-none"
+                          />
+                        )}
+                      </motion.div>
+                    );
+                  })}
                 </div>
+
+                {/* Navigation Buttons */}
                 <div className="flex justify-between mt-6">
-                  <button onClick={() => setStep(0)} className="px-6 py-3 border rounded-lg hover:bg-gray-50">Back</button>
-                  <button onClick={() => setStep(2)} className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700" disabled={!selectedService}>Next</button>
+                  <button
+                    onClick={() => setStep(0)}
+                    className="px-6 py-3 border rounded-lg hover:bg-gray-50"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={() => setStep(2)}
+                    className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:opacity-90"
+                    disabled={!selectedService}
+                  >
+                    Next
+                  </button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 2: Plan & Add-ons */}
+
+
+
+
+            {/* Step 2 */}
             {step === 2 && service && (
-              <motion.div key="s2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-white border rounded-3xl p-8 shadow-xl">
-                <h3 className="text-2xl font-semibold mb-6">3. Select a Plan</h3>
+              <motion.div
+                key="s2"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                className="bg-white border rounded-3xl p-8 shadow-lg"
+              >
+                <h3 className="text-2xl font-semibold mb-6 text-indigo-700">3. Select a Plan</h3>
                 <div className="grid md:grid-cols-3 gap-6">
                   {service.pricing.map((plan) => (
-                    <div key={plan.plan} onClick={() => setSelectedPlan(plan)} className={`cursor-pointer border rounded-2xl p-6 hover:shadow-lg transition ${selectedPlan?.plan === plan.plan ? "border-indigo-600 shadow-lg" : "border-gray-200"}`}>
+                    <motion.div
+                      key={plan.plan}
+                      whileHover={{ scale: 1.03 }}
+                      onClick={() => setSelectedPlan(plan)}
+                      className={`cursor-pointer border rounded-2xl p-6 transition ${selectedPlan?.plan === plan.plan ? "border-indigo-600 shadow-xl bg-indigo-50" : "border-gray-200 hover:shadow-md"
+                        }`}
+                    >
                       {plan.badge && <span className="bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full text-xs">{plan.badge}</span>}
-                      <h4 className="text-lg font-bold mt-2">{plan.plan}</h4>
-                      <p className="text-gray-500 mt-1">${plan.price}</p>
-                      <ul className="text-gray-400 mt-2 text-sm space-y-1">{plan.features.map((f) => <li key={f}>{f}</li>)}</ul>
+                      <h4 className="text-lg font-bold mt-2 text-gray-800">{plan.plan}</h4>
+                      <p className="text-indigo-700 mt-1 text-xl font-semibold">${formatPrice(plan.price)}</p>
+                      <ul className="text-gray-500 mt-2 text-sm space-y-1">
+                        {plan.features.map((f) => (
+                          <li key={f}>✔ {f}</li>
+                        ))}
+                      </ul>
                       <p className="mt-2 text-xs text-gray-500">Timeline: {plan.timeline}</p>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
 
+                {/* Add-ons */}
                 <h4 className="text-xl font-semibold mt-8 mb-4">Optional Add-ons</h4>
                 <div className="flex flex-wrap gap-4">
                   {addonsList.map((addon) => (
-                    <button key={addon.id} onClick={() => handleAddonToggle(addon)} className={`px-4 py-2 border rounded-lg text-sm ${addons.some((a) => a.id === addon.id) ? "bg-indigo-600 text-white border-indigo-600" : "bg-white border-gray-300 hover:bg-gray-50"}`}>
-                      {addon.name} +${addon.price}
+                    <button
+                      key={addon.id}
+                      onClick={() => handleAddonToggle(addon)}
+                      className={`px-4 py-2 border rounded-lg text-sm ${addons.some((a) => a.id === addon.id)
+                        ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+                        : "bg-white border-gray-300 hover:bg-gray-50"
+                        }`}
+                    >
+                      {addon.name} +${formatPrice(addon.price)}
                     </button>
                   ))}
                 </div>
 
                 <div className="flex justify-between mt-6">
-                  <button onClick={() => setStep(1)} className="px-6 py-3 border rounded-lg hover:bg-gray-50">Back</button>
-                  <button onClick={() => setStep(3)} className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700" disabled={!selectedPlan}>Next</button>
+                  <button onClick={() => setStep(1)} className="px-6 py-3 border rounded-lg hover:bg-gray-50">
+                    Back
+                  </button>
+                  <button
+                    onClick={() => setStep(3)}
+                    className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:opacity-90"
+                    disabled={!selectedPlan}
+                  >
+                    Next
+                  </button>
                 </div>
               </motion.div>
             )}
 
-            {/* Step 3: Quote */}
+            {/* Step 3 */}
             {step === 3 && service && selectedPlan && (
-              <motion.div key="s3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="bg-white border rounded-3xl p-8 shadow-xl">
-                <h3 className="text-2xl font-semibold mb-6">4. Quote Summary</h3>
+              <motion.div
+                key="s3"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                className="bg-white border rounded-3xl p-8 shadow-lg"
+              >
+                <h3 className="text-2xl font-semibold mb-6 text-indigo-700">4. Your Project Quote</h3>
                 <div className="space-y-4">
-                  <p><span className="font-semibold">Service:</span> {service.title}</p>
-                  <p><span className="font-semibold">Plan:</span> {selectedPlan.plan} (${selectedPlan.price})</p>
-                  <p><span className="font-semibold">Add-ons:</span> {addons.length ? addons.map((a) => `${a.name} ($${a.price})`).join(", ") : "None"}</p>
-                  <p className="text-lg font-bold">Total Estimate: ${totalEstimate}</p>
+                  <div className="flex justify-between"><span>Plan:</span><span className="font-semibold">{selectedPlan.plan}</span></div>
+                  <div className="flex justify-between"><span>Price:</span><span className="font-semibold">${formatPrice(selectedPlan.price)}</span></div>
+                  {addons.map((a) => (
+                    <div key={a.id} className="flex justify-between">
+                      <span>{a.name}</span>
+                      <span className="font-semibold">+${formatPrice(a.price)}</span>
+                    </div>
+                  ))}
+                  <div className="flex justify-between border-t pt-4 text-lg font-bold">
+                    <span>Total Estimate</span>
+                    <span>${totalEstimate.toFixed(2)}</span>
+                  </div>
+                  <button
+                    onClick={() => setStep(0)}
+                    className="px-6 py-3 border rounded-lg hover:bg-gray-50"
+                  >
+                    Back
+                  </button>
+                </div>
 
-                  <button onClick={downloadPDF} className="mt-4 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">Download PDF</button>
-                  <button onClick={handleRequestQuote} className="mt-4 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Request Quote</button>
-                  <button onClick={() => setStep(2)} className="mt-4 px-6 py-3 border rounded-lg hover:bg-gray-50">Back</button>
+                {/* Roadmap */}
+                <h4 className="text-xl font-semibold mt-8 mb-4">Project Roadmap</h4>
+                <ol className="list-decimal pl-6 text-gray-600 space-y-2">
+                  {service.roadmap.map((s, i) => <li key={i}>{s}</li>)}
+                </ol>
+
+                {/* Actions */}
+                <div className="flex flex-col md:flex-row gap-4 mt-6">
+                  <button onClick={downloadPDF} className="flex-1 bg-white border px-6 py-3 rounded-lg hover:bg-gray-50">
+                    Download PDF
+                  </button>
+                  <button onClick={handleRequestQuote} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:opacity-90">
+                    Request Quote
+                  </button>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Quick Quote Sidebar */}
-        <div className="hidden md:block bg-indigo-50 border border-indigo-100 p-6 rounded-2xl shadow-inner">
-          <h4 className="font-semibold text-lg mb-4">Quick Quote</h4>
-          <div className="text-gray-700 space-y-2">
-            <p><span className="font-semibold">Service:</span> {service?.title || "-"}</p>
-            <p><span className="font-semibold">Plan:</span> {selectedPlan?.plan || "-"}</p>
-            <p><span className="font-semibold">Add-ons:</span> {addons.length ? addons.map((a) => a.name).join(", ") : "-"}</p>
-            <p className="text-lg font-bold mt-2">Total: ${totalEstimate}</p>
+        {/* Sidebar */}
+        <div className="bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-3xl p-8 shadow-xl flex flex-col justify-between">
+          {/* Progress Tracker */}
+          <div>
+            <h3 className="text-2xl font-bold mb-6">Your Progress</h3>
+            <ul className="space-y-4">
+              {["Client Info", "Service", "Plan & Add-ons", "Quote"].map((label, i) => (
+                <li
+                  key={i}
+                  className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
+                  onClick={() => setStep(i)} // Allow users to jump to any step
+                >
+                  <motion.div
+                    animate={{ scale: step === i ? 1.2 : 1 }}
+                    transition={{ duration: 0.3 }}
+                    className={`w-6 h-6 flex items-center justify-center rounded-full border-2 ${step >= i ? "border-green-300 bg-green-400 text-white" : "border-gray-400 text-gray-400"
+                      }`}
+                  >
+                    {step > i ? <CheckCircle className="w-4 h-4" /> : i + 1}
+                  </motion.div>
+                  <span className={`font-medium ${step === i ? "text-white" : "text-gray-200"}`}>{label}</span>
+                </li>
+              ))}
+            </ul>
           </div>
+
+          {/* Plan Summary & Estimate */}
+          {selectedPlan && (
+            <div className="bg-white text-indigo-700 p-6 rounded-2xl mt-10 shadow-lg">
+              <h4 className="text-lg font-bold mb-2">Selected Plan</h4>
+              <p className="font-semibold">{selectedPlan.plan}</p>
+              <div className="mt-2">
+                <h4 className="text-lg font-bold mb-2">Add-ons</h4>
+                {addons.length > 0 ? (
+                  <ul className="list-disc list-inside text-gray-600">
+                    {addons.map((a) => (
+                      <li key={a.id}>{a.name} (+${formatPrice(a.price)})</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-gray-400 text-sm">No add-ons selected</p>
+                )}
+              </div>
+              <div className="mt-4 border-t pt-4 text-lg font-bold flex justify-between items-center">
+                <span>Total Estimate</span>
+                <span>${totalEstimate.toFixed(2)}</span>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={downloadPDF}
+                  className="flex-1 bg-white text-indigo-600 font-semibold px-4 py-2 rounded-lg hover:bg-gray-100"
+                >
+                  Download PDF
+                </button>
+                <button
+                  onClick={handleRequestQuote}
+                  className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-4 py-2 rounded-lg hover:opacity-90"
+                >
+                  Request Quote
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Optional Mini Roadmap */}
+          {service && (
+            <div className="mt-8">
+              <h4 className="text-white font-bold mb-2">Roadmap</h4>
+              <ul className="space-y-2">
+                {service.roadmap.map((stepLabel, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <span
+                      className={`w-3 h-3 rounded-full ${idx <= step ? "bg-green-300" : "bg-gray-400"
+                        }`}
+                    ></span>
+                    <span className={idx <= step ? "text-white" : "text-gray-200"}>{stepLabel}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
+
       </div>
     </div>
   );
