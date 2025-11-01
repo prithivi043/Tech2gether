@@ -13,15 +13,12 @@ export const Header = () => {
     { path: "/about", label: "About" },
     { path: "/services", label: "Services" },
     { path: "/blog", label: "Blog" },
-    { path: "/cost-calculator", label: "Calculator" },
+    { path: "/cost-calculator", label: "InVoice" },
     { path: "/contact", label: "Contact" },
   ];
 
   const servicesList = [
-    { path: "/services", label: "Services" },
-    { path: "/services/web-development", label: "Web Development" },
-    { path: "/services/poster-design", label: "Poster Design" },
-    { path: "/services/ui-ux-design", label: "UI/UX Design" },
+    { path: "/services", label: "Services" }
   ];
 
   return (

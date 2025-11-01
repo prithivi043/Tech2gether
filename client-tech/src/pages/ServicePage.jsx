@@ -1,138 +1,114 @@
 // src/pages/ServicesPage.jsx
-import React, { Suspense, lazy } from "react";
-import { motion } from "framer-motion";
+import React from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Code, Palette, PenTool } from "lucide-react";
 
-// ✅ Lazy load lucide-react icons
-const Globe = lazy(() => import("lucide-react").then(m => ({ default: m.Globe })));
-const Palette = lazy(() => import("lucide-react").then(m => ({ default: m.Palette })));
-const Layout = lazy(() => import("lucide-react").then(m => ({ default: m.Layout })));
+const services = [
+  {
+    id: "web-development",
+    title: "Web Development",
+    description:
+      "Crafting high-performing, secure, and scalable websites tailored for modern businesses.",
+    icon: <Code className="w-10 h-10 text-cyan-500" />,
+    cta: "Get Started",
+  },
+  {
+    id: "poster-design",
+    title: "Poster Design",
+    description:
+      "Impactful poster designs that capture attention and deliver your message with style.",
+    icon: <Palette className="w-10 h-10 text-pink-500" />,
+    cta: "Request Design",
+  },
+  {
+    id: "ui-ux-design",
+    title: "UI/UX Design",
+    description:
+      "Designing intuitive and delightful user experiences for apps and digital products.",
+    icon: <PenTool className="w-10 h-10 text-green-500" />,
+    cta: "Explore Design",
+  },
+];
 
 export default function ServicesPage() {
-  const services = [
-    {
-      id: "web-development",
-      title: "Web Development",
-      description:
-        "We craft fast, scalable, and responsive web solutions. From personal portfolios to enterprise platforms, our websites are built with the latest technologies for speed, security, and SEO.",
-      points: [
-        "Custom Website Development",
-        "Full-Stack Web Applications",
-        "SEO & Performance Optimization",
-        "Responsive & Mobile-First Design",
-      ],
-      cta: "Get Started",
-      icon: <Globe size={40} className="text-blue-300" />,
-    },
-    {
-      id: "poster-design",
-      title: "Poster Design",
-      description:
-        "Our creative team builds visually striking posters that amplify your message. Perfect for events, marketing campaigns, and branding promotions, blending clarity with impact.",
-      points: [
-        "Event & Promotional Posters",
-        "Digital & Print-Ready Designs",
-        "Custom Branding Elements",
-        "Creative Marketing Visuals",
-      ],
-      cta: "Request Design",
-      icon: <Palette size={40} className="text-pink-300" />,
-    },
-    {
-      id: "ui-ux-design",
-      title: "UI/UX Design",
-      description:
-        "We design user experiences that are both beautiful and functional. Our UI/UX solutions enhance usability, engagement, and customer satisfaction across devices.",
-      points: [
-        "Wireframes & Interactive Prototypes",
-        "Mobile & Web App Interfaces",
-        "Usability Testing & Feedback",
-        "Interactive Visual Experiences",
-      ],
-      cta: "Explore More",
-      icon: <Layout size={40} className="text-green-300" />,
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-700 via-blue-900 to-blue-950 text-gray-100 font-sans">
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 text-center max-w-4xl mx-auto">
-        <motion.h2
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-300 bg-clip-text text-transparent mb-6"
-        >
-          Our Services
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.8 }}
-          className="text-blue-200 text-lg leading-relaxed"
-        >
-          Tech2gether delivers digital solutions that help your brand grow.
-          From modern websites to engaging visuals and intuitive designs—we
-          create results that make an impact.
-        </motion.p>
-      </section>
-
-      {/* Services List */}
-      <section className="pb-24 px-6 max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
-        <Suspense fallback={<div className="text-blue-200">Loading services...</div>}>
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:scale-[1.03] transition transform group"
-            >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="p-3 rounded-full bg-white/10">{service.icon}</div>
-                <h3 className="text-2xl font-semibold">{service.title}</h3>
-              </div>
-              <p className="text-blue-100 mb-6 text-base">{service.description}</p>
-              <ul className="list-disc list-inside text-blue-200 space-y-2 mb-6">
-                {service.points.map((point, i) => (
-                  <li key={i}>{point}</li>
-                ))}
-              </ul>
-              <Link
-                to={`/services/${service.id}`}
-                className="inline-block bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:from-cyan-500 hover:to-blue-600 transition"
-              >
-                {service.cta}
-              </Link>
-            </motion.div>
-          ))}
-        </Suspense>
-      </section>
-
-      {/* CTA Section */}
-      <motion.section
-        initial={{ opacity: 0, y: 50 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="py-20 px-6 bg-gradient-to-r from-blue-800 to-indigo-900 text-center"
+    <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen py-20 px-6 lg:px-20">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+        className="text-center max-w-3xl mx-auto mb-16"
       >
-        <h3 className="text-4xl md:text-5xl font-bold mb-6 text-white">
-          Let’s Build Something Great
-        </h3>
-        <p className="text-blue-200 mb-8 max-w-2xl mx-auto text-lg">
-          From startups to enterprises, Tech-Together is ready to bring your
-          ideas to life with innovation and expertise.
+        <h1 className="text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+          Our <span className="bg-gradient-to-r from-cyan-500 to-blue-600 bg-clip-text text-transparent">Services</span>
+        </h1>
+        <p className="text-lg text-gray-600 leading-relaxed">
+          We provide cutting-edge digital solutions that help your brand grow and
+          succeed. Explore our services tailored for businesses of every scale.
         </p>
-        <a
-          href="/contact"
-          className="bg-gradient-to-r from-cyan-400 to-blue-500 text-white font-semibold px-10 py-4 rounded-2xl shadow-lg hover:from-cyan-500 hover:to-blue-600 transition"
+      </motion.div>
+
+      {/* Services Grid */}
+      <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-3">
+        {services.map((service, index) => (
+          <motion.div
+            key={service.id}
+            initial={{ opacity: 0, y: 60 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.2, duration: 0.6 }}
+            className="relative bg-white rounded-3xl shadow-lg hover:shadow-2xl p-8 transition transform hover:-translate-y-2 border border-gray-100 group"
+          >
+            {/* Icon */}
+            <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 shadow-inner mb-6 group-hover:scale-110 transition">
+              {service.icon}
+            </div>
+
+            {/* Title */}
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">
+              {service.title}
+            </h3>
+
+            {/* Description */}
+            <p className="text-gray-600 mb-6 leading-relaxed">
+              {service.description}
+            </p>
+
+            {/* CTA Button */}
+            <Link
+              to={`/services/${service.id}#offers`}
+              className="inline-block bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:from-cyan-600 hover:to-blue-700 transition-all duration-300"
+            >
+              {service.cta}
+            </Link>
+
+            {/* Glow effect */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-400/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Bottom CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.5 }}
+        className="text-center mt-20"
+      >
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          Ready to Build Something Great?
+        </h2>
+        <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+          From startups to enterprises, we craft solutions that drive growth and success.
+        </p>
+        <Link
+          to="/contact"
+          className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold px-10 py-4 rounded-2xl shadow-lg hover:from-cyan-600 hover:to-blue-700 transition"
         >
           Contact Us
-        </a>
-      </motion.section>
+        </Link>
+      </motion.div>
     </div>
   );
 }

@@ -2,7 +2,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
-import { CheckCircle, Copy, Star } from "lucide-react";
+import autoTable from "jspdf-autotable"; // ✅ Correct import
+import { CheckCircle, Copy } from "lucide-react";
 import { sendQuoteForm } from "../api/quoteApi";
 
 // Format INR → USD
@@ -69,10 +70,11 @@ export default function SmartEstimator() {
   const [addons, setAddons] = useState([]);
   const [clientId] = useState(generateClientId());
   const [copied, setCopied] = useState(false);
+
   const handleCopy = () => {
     navigator.clipboard.writeText(clientId);
     setCopied(true);
-    setTimeout(() => setCopied(false), 1500); // reset message after 1.5s
+    setTimeout(() => setCopied(false), 1500);
   };
 
   const service = servicesData[selectedService];
@@ -96,25 +98,47 @@ export default function SmartEstimator() {
     setAddons([]);
   };
 
+  // ✅ Fixed downloadPDF using correct plugin call
   const downloadPDF = () => {
     if (!service || !selectedPlan) return;
+
     const doc = new jsPDF();
+
     doc.setFontSize(18);
-    doc.text("Project Quote", 14, 20);
+    doc.text("Project Invoice", 14, 20);
     doc.setFontSize(12);
-    doc.text(`Client ID: ${clientId}`, 14, 35);
-    doc.text(`Name: ${clientInfo.name}`, 14, 45);
-    doc.text(`Email: ${clientInfo.email}`, 14, 55);
-    doc.text(`Service: ${service.title}`, 14, 65);
-    doc.text(`Plan: ${selectedPlan.plan} - $${formatPrice(selectedPlan.price)}`, 14, 75);
-    doc.text("Add-ons:", 14, 85);
-    addons.length
-      ? addons.forEach((a, i) => doc.text(`- ${a.name} ($${formatPrice(a.price)})`, 20, 95 + i * 10))
-      : doc.text("None", 20, 95);
-    doc.text(`Total Estimate: $${totalEstimate.toFixed(2)}`, 14, 120);
-    doc.text("Roadmap:", 14, 140);
-    service.roadmap.forEach((s, i) => doc.text(`${i + 1}. ${s}`, 20, 150 + i * 10));
-    doc.save(`${clientId}-${service.title}-${selectedPlan.plan}-quote.pdf`);
+
+    // Client Info Table
+    autoTable(doc, {
+      startY: 30,
+      head: [["Field", "Details"]],
+      body: [
+        ["Client ID", clientId],
+        ["Name", clientInfo.name],
+        ["Email", clientInfo.email],
+        ["Service", service.title],
+        ["Plan", `${selectedPlan.plan} - $${formatPrice(selectedPlan.price)}`],
+        ["Add-ons", addons.length ? addons.map(a => `${a.name} ($${formatPrice(a.price)})`).join(", ") : "None"],
+        ["Total Estimate", `$${totalEstimate.toFixed(2)}`],
+      ],
+      theme: "grid",
+      headStyles: { fillColor: [22, 160, 133] },
+      styles: { fontSize: 11, cellPadding: 3 },
+    });
+
+    // Project Roadmap Table
+    // if (service.roadmap?.length) {
+    //   const finalY = doc.lastAutoTable.finalY + 10;
+    //   doc.text("Project Roadmap:", 14, finalY);
+    //   autoTable(doc, {
+    //     startY: finalY + 5,
+    //     head: [["Step", "Description"]],
+    //     body: service.roadmap.map((s, i) => [i + 1, s]),
+    //     theme: "striped",
+    //   });
+    // }
+
+    doc.save(`${clientId}-${service.title}-${selectedPlan.plan}-invoice.pdf`);
   };
 
   const handleRequestQuote = async () => {
@@ -123,6 +147,7 @@ export default function SmartEstimator() {
       return;
     }
     try {
+      const clientId = `CL-${Math.random().toString(36).substring(2, 8)}-${Date.now().toString(36).toUpperCase()}`;
       await sendQuoteForm({
         clientId,
         ...clientInfo,
@@ -133,7 +158,8 @@ export default function SmartEstimator() {
       });
       alert("✅ Quote request sent!");
       reset();
-    } catch {
+    } catch (err) {
+      console.error("Error sending quote:", err);
       alert("❌ Failed to send quote.");
     }
   };
